@@ -40,23 +40,35 @@ To scrape all unit guides we will first need to create a list of all URL
 combinations for year and teaching period, scrape a list of all associated units
 and then use all three to access each unit guide.
 
-### Combination for year and teaching period
+### URLs with all combinations of year and teaching period
 ```python
-def yrPeriodUrl(x, y):
+def yrPeriodUrl(startYr, endYr):
   output = []
   url1 = 'https://www.deakin.edu.au/current-students/unitguides/index.php?year='
   url2 = '&semester=TRI-'
   url3 = '&unit='
-  while x <= y:
+  while startYr <= endYr:
   	tri = 1
-  	url4 = url1 + str(x) + url2
+  	url4 = url1 + str(startYr) + url2
   	while tri <= 3:
   		url = url4 + str(tri) + url3
   		output.append(url)
   		tri = tri + 1
-  	x = x + 1
+  	startYr = startYr + 1
   return output
 
 test = yrPeriodUrl(2009, 2017)
 print(test)
+```
+
+### List of all units for each combination of year and teaching period
+Following tutorial: http://web.stanford.edu/~zlotnick/TextAsData/Web_Scraping_with_Beautiful_Soup.html
+```python
+from bs4 import BeautifulSoup
+import urllib
+r = urllib.urlopen('URL').read()
+soup = BeautifulSoup(r)
+print type(soup)
+soup.find_all(id_="unitSelectBox", "option")
+
 ```
