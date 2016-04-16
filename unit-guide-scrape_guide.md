@@ -57,18 +57,32 @@ def yrPeriodUrl(startYr, endYr):
   	startYr = startYr + 1
   return output
 
-test = yrPeriodUrl(2009, 2017)
-print(test)
+yrPerUrl = yrPeriodUrl(2009, 2016)
+print(yrPerUrl)
 ```
 
 ### List of all units for each combination of year and teaching period
-Following tutorial: http://web.stanford.edu/~zlotnick/TextAsData/Web_Scraping_with_Beautiful_Soup.html
 ```python
 from bs4 import BeautifulSoup
-import urllib
-r = urllib.urlopen('URL').read()
-soup = BeautifulSoup(r)
-print type(soup)
-soup.find_all(id_="unitSelectBox", "option")
+import urllib.request as ur
+r = ur.urlopen('https://www.deakin.edu.au/current-students/unitguides/index.php?year=2016&semester=TRI-1&unit=').read()
+soup = BeautifulSoup(r, 'html.parser')
+print(soup.prettify())
+unitList = soup.select("#unitSelectBox option")
+units = []
+for unit in unitList:
+  units.append(unit.get_text())
+
+a = []
+b = []
+for unit in units:
+  a.append(unit[0:6])
+  b.append(unit[9:len(unit)])
+
+import pandas as pd
+unitsSplit = list(zip(a,b))
+unitsSplit
+
+df = pd.DataFrame(data = unitsSplit, columns=['unitCode', 'unitName'])
 
 ```
