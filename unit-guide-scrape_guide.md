@@ -44,45 +44,62 @@ and then use all three to access each unit guide.
 ```python
 def yrPeriodUrl(startYr, endYr):
   output = []
+  yr = []
+  trimester = []
   url1 = 'https://www.deakin.edu.au/current-students/unitguides/index.php?year='
   url2 = '&semester=TRI-'
   url3 = '&unit='
   while startYr <= endYr:
-  	tri = 1
-  	url4 = url1 + str(startYr) + url2
-  	while tri <= 3:
-  		url = url4 + str(tri) + url3
-  		output.append(url)
-  		tri = tri + 1
-  	startYr = startYr + 1
-  return output
+    tri = 1
+    url4 = url1 + str(startYr) + url2
+    while tri <= 3:
+      url = url4 + str(tri) + url3
+      output.append(url)
+      yr.append(startYr)
+      trimester.append(tri)
+      tri = tri + 1
+    startYr = startYr + 1
+  import pandas as pd
+  urlZip = list(zip(yr,trimester,output))
+  dfUrl = pd.DataFrame(data = urlZip, columns=['yr', 'tri', 'yrPerUrl'])
+  return (dfUrl, urlZip)
 
 yrPerUrl = yrPeriodUrl(2009, 2016)
-print(yrPerUrl)
+dfYrPer = yrPerUrl[0]
+listYrPer = yrPerUrl[1]
 ```
 
 ### List of all units for each combination of year and teaching period
 ```python
 from bs4 import BeautifulSoup
 import urllib.request as ur
-r = ur.urlopen('https://www.deakin.edu.au/current-students/unitguides/index.php?year=2016&semester=TRI-1&unit=').read()
-soup = BeautifulSoup(r, 'html.parser')
-print(soup.prettify())
-unitList = soup.select("#unitSelectBox option")
-units = []
-for unit in unitList:
-  units.append(unit.get_text())
+def unitScrape(listYrPer):
+  unitCode = []
+  unitName = []
+  yr = []
+  tri = []
+  for url in listYrPer:
+    r = ur.urlopen(url[2]).read()
+    soup = BeautifulSoup(r, 'html.parser')
+    unitList = soup.select("#unitSelectBox option")
+    units = []
+    for unit in unitList:
+      units.append(unit.get_text())
+    for unit in units:
+      unitCode.append(unit[0:6])
+      unitName.append(unit[9:len(unit)])
+      yr.append(url[0])
+      tri.append(url[1])
+  import pandas as pd
+  unitsSplit = list(zip(unitCode,unitName,yr,tri))
+  df = pd.DataFrame(data = unitsSplit, columns=['unitCode', 'unitName', 'yr', 'tri'])
+  return df
 
-a = []
-b = []
-for unit in units:
-  a.append(unit[0:6])
-  b.append(unit[9:len(unit)])
-
-import pandas as pd
-unitsSplit = list(zip(a,b))
-unitsSplit
-
-df = pd.DataFrame(data = unitsSplit, columns=['unitCode', 'unitName'])
-
+unitGuideList = unitScrape(listYrPer)
 ```
+
+### Scrape unit information from unit guides
+Not all of the unit guides have the same HTML structure so a single script will
+not be able to pull data from all guides. Investigation of the unit guides
+shows that unit guides from the following years have the same structure:
+2009-2012, 2013, 2014-onwards.
