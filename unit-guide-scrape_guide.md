@@ -107,4 +107,27 @@ shows that unit guides from the following years have the same structure:
 To make this work we are going to write several helper functions that can then
 be used by the main function to scrape the specific information requested. The
 function will work by:
-1. Taking in 
+1. Specify year, trimester and unit code parameters.
+2. Specify what unit information is required, this could include:
+    * All - all parameters
+    * Unit chair
+    * About unit
+    * Contact Hours
+    * Study commitment
+    * ULOs
+    * GLOs
+    * Summative assessments
+      * Description
+      * Student output
+      * Weighting
+      * ULOs
+      * GLOs
+
+```python
+# Test function to extract unit chair information.
+
+def unitChair(soup):
+  unitChair = soup.select("a[name=0-UNIT-CHAIR-ORIDE] p:nth-child(2)")
+
+
+```
