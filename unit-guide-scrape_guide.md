@@ -103,3 +103,8 @@ Not all of the unit guides have the same HTML structure so a single script will
 not be able to pull data from all guides. Investigation of the unit guides
 shows that unit guides from the following years have the same structure:
 2009-2012, 2013, 2014-onwards.
+
+To make this work we are going to write several helper functions that can then
+be used by the main function to scrape the specific information requested. The
+function will work by:
+1. Taking in 
