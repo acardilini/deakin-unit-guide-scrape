@@ -124,10 +124,46 @@ function will work by:
       * GLOs
 
 ```python
-# Test function to extract unit chair information.
+# Test function to extract unit chair information. 2016
+from bs4 import BeautifulSoup
+import urllib.request as ur
+import re
 
-def unitChair(soup):
-  unitChair = soup.select("a[name=0-UNIT-CHAIR-ORIDE] p:nth-child(2)")
+testUrl = "https://www.deakin.edu.au/current-students/unitguides/UnitGuide.php?year=2016&semester=TRI-1&unit=SLE111"
+r = ur.urlopen(testUrl).read()
+soup = BeautifulSoup(r, 'html.parser')
+print(soup.prettify())
+
+unitChairTag = soup.select("a[name=0-UNIT-CHAIR] ~ p > p")
+unitChair = unitChairTag[0].get_text()
+```
+```python
+# Test function to extract information 'About This Unit'. 2016
+from bs4 import BeautifulSoup
+import urllib.request as ur
+import re
+
+testUrl = "https://www.deakin.edu.au/current-students/unitguides/UnitGuide.php?year=2016&semester=TRI-1&unit=SLE111"
+r = ur.urlopen(testUrl).read()
+soup = BeautifulSoup(r, 'html.parser')
+print(soup.prettify())
+
+contactHoursTag = soup.select("a[name=0-CONTACT-HRS] ~ p > p")
+contactHours = contactHoursTag[0].get_text()
+```
 
 
+```python
+# Test function to extract information 'About This Unit'. 2016
+from bs4 import BeautifulSoup
+import requests
+
+testUrl = "https://www.deakin.edu.au/current-students/unitguides/UnitGuide.php?year=2016&semester=TRI-1&unit=SLE111"
+r = requests.get(testUrl).content
+soup = BeautifulSoup(r, 'html.parser')
+print(soup.prettify())
+
+uloTableTag = soup.find(text=re.compile("ULO")).find_parent("table")
+for row in uloTableTag.find_all("tr")[1:]:
+    print([cell.get_text(strip=True) for cell in row.find_all("td")])
 ```
